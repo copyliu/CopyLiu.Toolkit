@@ -24,9 +24,7 @@ namespace CopyLiu.Toolkit.String
 
             return new string(chArray);
 #elif NETSTANDARD2_1
-            var length = input.Length;
-            BitConverter.ToString(input);
-            return string.Create(length * 2, input, (dst, state) =>
+            return string.Create(input.Length * 2, input, (dst, state) =>
             {
                 const string HexValues = "0123456789abcdef";
 
