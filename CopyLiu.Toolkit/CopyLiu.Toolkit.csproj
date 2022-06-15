@@ -3,10 +3,17 @@
     <PropertyGroup>
         <LangVersion>8</LangVersion>
         <TargetFrameworks>net462;netstandard2.0</TargetFrameworks>
+        <Title>CopyLiu.Toolkit</Title>
+        <Authors>CopyLiu</Authors>
+        <Description>CopyLiu的各种轮子</Description>
+        <Copyright>CopyLiu</Copyright>
+        <PackageProjectUrl>https://github.com/copyliu/CopyLiu.Toolkit</PackageProjectUrl>
+        <PackageLicenseUrl>https://github.com/copyliu/CopyLiu.Toolkit/blob/master/LICENSE</PackageLicenseUrl>
+        <RepositoryUrl>https://github.com/copyliu/CopyLiu.Toolkit</RepositoryUrl>
+        <PackageVersion>0.0.0-alpha.$([System.DateTime]::Now.ToString("yyyyMMddHHmm"))</PackageVersion>
     </PropertyGroup>
-
-    <ItemGroup>
-        <Folder Include="Crypt"/>
-    </ItemGroup>
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    </PropertyGroup>
 
 </Project>
