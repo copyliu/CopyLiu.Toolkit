@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <LangVersion>8</LangVersion>
-        <TargetFrameworks>net462;netstandard2.0</TargetFrameworks>
+        <TargetFrameworks>net462;netstandard2.0;netstandard2.1</TargetFrameworks>
         <Title>CopyLiu.Toolkit</Title>
         <Authors>CopyLiu</Authors>
         <Description>CopyLiu的各种轮子</Description>
