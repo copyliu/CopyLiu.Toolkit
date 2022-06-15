@@ -23,7 +23,7 @@ namespace CopyLiu.Toolkit.String
             }
 
             return new string(chArray);
-#elif NETSTANDARD2_1
+#elif NETSTANDARD2_1_OR_GREATER
             return string.Create(input.Length * 2, input, (dst, state) =>
             {
                 const string HexValues = "0123456789abcdef";
