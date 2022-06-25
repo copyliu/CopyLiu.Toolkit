@@ -1,40 +1,31 @@
 ﻿using System;
 using System.Security.Cryptography;
 using System.Text;
+using CopyLiu.Toolkit.String;
 
 namespace CopyLiu.Toolkit.Crypt
 {
-    public class AES
+    public class AESCBC
     {
-        private static RijndaelManaged GetRijndaelManaged(string secretKey)
+        private static RijndaelManaged GetCryptoServiceProvider(byte[] keyBytes, byte[] ivBytes)
         {
-            var keyBytes = new byte[16];
-            var secretKeyBytes = Encoding.UTF8.GetBytes(secretKey);
-            Array.Copy(secretKeyBytes, keyBytes, Math.Min(keyBytes.Length, secretKeyBytes.Length));
-            return new RijndaelManaged
+            var cryptoProvider = new RijndaelManaged
             {
                 Mode = CipherMode.CBC,
                 Padding = PaddingMode.PKCS7,
                 KeySize = 128,
                 BlockSize = 128,
                 Key = keyBytes,
-                IV = keyBytes
+                IV = ivBytes
             };
+            return cryptoProvider;
         }
 
-        private static RijndaelManaged GetRijndaelManaged256ECB(string secretKey)
+        private static RijndaelManaged GetCryptoServiceProvider(string secretKey, string iv)
         {
-            var keyBytes = new byte[32];
-            var secretKeyBytes = Encoding.UTF8.GetBytes(secretKey);
-            Array.Copy(secretKeyBytes, keyBytes, Math.Min(keyBytes.Length, secretKeyBytes.Length));
-            return new RijndaelManaged
-            {
-                Mode = CipherMode.ECB,
-                Padding = PaddingMode.PKCS7,
-                KeySize = 256,
-                BlockSize = 128,
-                Key = keyBytes
-            };
+            var keyBytes = secretKey.AsByteArray();
+            var ivBytes = iv.AsByteArray();
+            return GetCryptoServiceProvider(keyBytes, ivBytes);
         }
 
         private static byte[] Encrypt(byte[] plainBytes, RijndaelManaged rijndaelManaged)
@@ -49,32 +40,41 @@ namespace CopyLiu.Toolkit.Crypt
                 .TransformFinalBlock(encryptedData, 0, encryptedData.Length);
         }
 
-
-        public static string Base64Encrypt(string plainText, string key)
+        public static byte[] Encrypt(byte[] data, byte[] key, byte[] iv)
         {
-            var plainBytes = Encoding.UTF8.GetBytes(plainText);
-            return Convert.ToBase64String(Encrypt(plainBytes, GetRijndaelManaged(key)));
+            return Encrypt(data, GetCryptoServiceProvider(key, iv));
+        }
+
+        public static byte[] Decrypt(byte[] data, byte[] key, byte[] iv)
+        {
+            return Decrypt(data, GetCryptoServiceProvider(key, iv));
+        }
+
+        public static string Base64Encrypt(byte[] data, byte[] key, byte[] iv)
+        {
+            return Convert.ToBase64String(Encrypt(data, GetCryptoServiceProvider(key, iv)));
         }
 
 
-        public static string Base64Decrypt(string encryptedText, string key)
+        public static byte[] Base64Decrypt(string encryptedText, byte[] key, byte[] iv)
         {
             var encryptedBytes = Convert.FromBase64String(encryptedText);
-            return Encoding.UTF8.GetString(Decrypt(encryptedBytes, GetRijndaelManaged(key)));
+            return Decrypt(encryptedBytes, GetCryptoServiceProvider(key, iv));
+        }
+
+        public static string Base64Encrypt(string plainText, byte[] key, byte[] iv, Encoding encoding = null)
+        {
+            encoding ??= Encoding.UTF8;
+            var plainBytes = encoding.GetBytes(plainText);
+            return Convert.ToBase64String(Encrypt(plainBytes, GetCryptoServiceProvider(key, iv)));
         }
 
 
-        public static string Base64EncryptAES256ECB(string plainText, string key)
+        public static string Base64Decrypt(string encryptedText, byte[] key, byte[] iv, Encoding encoding)
         {
-            var plainBytes = Encoding.UTF8.GetBytes(plainText);
-            return Convert.ToBase64String(Encrypt(plainBytes, GetRijndaelManaged256ECB(key)));
-        }
-
-
-        public static string Base64DecryptAES256ECB(string encryptedText, string key)
-        {
+            encoding ??= Encoding.UTF8;
             var encryptedBytes = Convert.FromBase64String(encryptedText);
-            return Encoding.UTF8.GetString(Decrypt(encryptedBytes, GetRijndaelManaged256ECB(key)));
+            return encoding.GetString(Decrypt(encryptedBytes, GetCryptoServiceProvider(key, iv)));
         }
     }
 }

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Security.Cryptography;
 using System.Text;
+using CopyLiu.Toolkit.String;
 
 namespace CopyLiu.Toolkit.Crypt
 {
-    public class DES
+    public class DESCBC
     {
         private static TripleDESCryptoServiceProvider GetCryptoServiceProvider(byte[] keyBytes, byte[] ivBytes)
         {
@@ -20,15 +21,8 @@ namespace CopyLiu.Toolkit.Crypt
 
         private static TripleDESCryptoServiceProvider GetCryptoServiceProvider(string secretKey, string iv)
         {
-            var NumberChars = secretKey.Length;
-            var keyBytes = new byte[NumberChars / 2];
-            for (var i = 0; i < NumberChars; i += 2)
-                keyBytes[i / 2] = Convert.ToByte(secretKey.Substring(i, 2), 16);
-
-            var ivNumberChars = iv.Length;
-            var ivBytes = new byte[ivNumberChars / 2];
-            for (var i = 0; i < ivNumberChars; i += 2)
-                ivBytes[i / 2] = Convert.ToByte(iv.Substring(i, 2), 16);
+            var keyBytes = secretKey.AsByteArray();
+            var ivBytes = iv.AsByteArray();
             return GetCryptoServiceProvider(keyBytes, ivBytes);
         }
 
@@ -66,7 +60,7 @@ namespace CopyLiu.Toolkit.Crypt
             return Decrypt(encryptedBytes, GetCryptoServiceProvider(key, iv));
         }
 
-        public static string Base64Encrypt(string plainText, string key, string iv, Encoding encoding = null)
+        public static string Base64Encrypt(string plainText, byte[] key, byte[] iv, Encoding encoding = null)
         {
             encoding ??= Encoding.UTF8;
             var plainBytes = encoding.GetBytes(plainText);
@@ -74,7 +68,7 @@ namespace CopyLiu.Toolkit.Crypt
         }
 
 
-        public static string Base64Decrypt(string encryptedText, string key, string iv, Encoding encoding = null)
+        public static string Base64Decrypt(string encryptedText, byte[] key, byte[] iv, Encoding encoding)
         {
             encoding ??= Encoding.UTF8;
             var encryptedBytes = Convert.FromBase64String(encryptedText);
